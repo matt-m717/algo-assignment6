@@ -12,92 +12,57 @@ import time
 # ============================================================================
 
 def lcs_recursive(seq1, seq2):
-    """
-    Find the length of longest common subsequence using pure recursion.
-    
-    A subsequence is a sequence that appears in the same relative order but not
-    necessarily contiguous. For example, "ACE" is a subsequence of "ABCDE".
-    
-    Args:
-        seq1 (str): First DNA sequence
-        seq2 (str): Second DNA sequence
-    
-    Returns:
-        int: Length of longest common subsequence
-    
-    Example:
-        lcs_recursive("AGGTAB", "GXTXAYB") returns 4 (LCS is "GTAB")
-    
-    WARNING: This will be exponentially slow on large inputs!
-    """
-    # TODO: Implement naive recursive solution
-    # Hint: Base case - if either sequence is empty, LCS length is 0
-    # Hint: If last characters match, LCS length = 1 + LCS of remaining sequences
-    # Hint: If last characters don't match, try removing last char from each sequence, take max
-    
-    pass  # Delete this and write your code
+    if not seq1 or not seq2:
+        return 0
 
+    if seq1[-1] == seq2[-1]:
+        return 1 + lcs_recursive(seq1[:-1], seq2[:-1])
+    else:
+        option1 = lcs_recursive(seq1[:-1], seq2)
+        option2 = lcs_recursive(seq1, seq2[:-1])
+        return max(option1, option2)
 
 # ============================================================================
 # PART 2: MEMOIZATION (TOP-DOWN WITH CACHING)
 # ============================================================================
 
 def lcs_memoization(seq1, seq2):
-    """
-    Find the length of longest common subsequence using memoization.
-    
-    Memoization caches results of subproblems to avoid redundant calculations.
-    This is a top-down approach - starts with original problem and breaks down.
-    
-    Args:
-        seq1 (str): First DNA sequence
-        seq2 (str): Second DNA sequence
-    
-    Returns:
-        int: Length of longest common subsequence
-    
-    Example:
-        lcs_memoization("AGGTAB", "GXTXAYB") returns 4 (LCS is "GTAB")
-    """
-    # TODO: Implement memoization solution
-    # Hint: Create a cache dictionary to store results
-    # Hint: Use tuple of (i, j) as key where i, j are positions in sequences
-    # Hint: Check cache before computing, store result before returning
-    # Hint: You may want to create a helper function that takes indices
-    
-    pass  # Delete this and write your code
+    cache = {}
+    i = len(seq1)
+    j = len(seq2)
 
+    if (i, j) in cache:
+        return cache[(i, j)]
+
+    if not seq1 or not seq2:
+        return 0
+
+    if seq1[i-1] == seq2[-1]:
+        result = 1 + lcs_recursive(seq1[:-1], seq2[:-1])
+    else:
+        option1 = lcs_recursive(seq1[:-1], seq2)
+        option2 = lcs_recursive(seq1, seq2[:-1])
+        result = max(option1, option2)
+    cache[(i, j)] = result
+    return result
 
 # ============================================================================
 # PART 3: TABULATION (BOTTOM-UP WITH TABLE)
 # ============================================================================
 
 def lcs_tabulation(seq1, seq2):
-    """
-    Find the length of longest common subsequence using tabulation.
-    
-    Tabulation builds a table iteratively from base cases up to the solution.
-    This is a bottom-up approach - starts with smallest subproblems.
-    
-    Args:
-        seq1 (str): First DNA sequence
-        seq2 (str): Second DNA sequence
-    
-    Returns:
-        int: Length of longest common subsequence
-    
-    Example:
-        lcs_tabulation("AGGTAB", "GXTXAYB") returns 4 (LCS is "GTAB")
-    """
-    # TODO: Implement tabulation solution
-    # Hint: Create a 2D table where dp[i][j] = LCS length of seq1[0..i] and seq2[0..j]
-    # Hint: Initialize first row and column to 0 (empty sequence cases)
-    # Hint: Fill table row by row
-    # Hint: If characters match: dp[i][j] = dp[i-1][j-1] + 1
-    # Hint: If characters don't match: dp[i][j] = max(dp[i-1][j], dp[i][j-1])
-    
-    pass  # Delete this and write your code
+    i = len(seq1)
+    j = len(seq2)
 
+    table = [[0 for _ in range(j+1)] for _ in range(i+1)]
+
+    for k in range(1, i+1):
+        for l in range(1, j+1):
+            if seq1[k-1] == seq2[l-1]:
+                table[k][l] = 1 + table[k-1][l-1]
+            else:
+                table[k][l] = max(table[k-1][l], table[k][l-1])
+    return table[i][j]
 
 # ============================================================================
 # TESTING & TIMING
@@ -240,7 +205,7 @@ if __name__ == "__main__":
     
     # Uncomment these as you complete each part:
     
-    # test_small_cases()
+    test_small_cases()
     # time_recursive()
     # compare_all_approaches()
     
