@@ -28,23 +28,23 @@ def lcs_recursive(seq1, seq2):
 
 def lcs_memoization(seq1, seq2):
     cache = {}
-    i = len(seq1)
-    j = len(seq2)
 
-    if (i, j) in cache:
-        return cache[(i, j)]
+    def lcs_recursive_memoization(i, j):
+        if (i, j) in cache:
+            return cache[(i, j)]
 
-    if not seq1 or not seq2:
-        return 0
+        if i == 0 or j == 0:
+            return 0
 
-    if seq1[i-1] == seq2[-1]:
-        result = 1 + lcs_recursive(seq1[:-1], seq2[:-1])
-    else:
-        option1 = lcs_recursive(seq1[:-1], seq2)
-        option2 = lcs_recursive(seq1, seq2[:-1])
-        result = max(option1, option2)
-    cache[(i, j)] = result
-    return result
+        if seq1[i-1] == seq2[j-1]:
+            result = 1 + lcs_recursive_memoization(i-1, j-1)
+        else:
+            result = max(lcs_recursive_memoization(i-1, j), lcs_recursive_memoization(i, j-1))
+
+        cache[(i, j)] = result
+        return result
+
+    return lcs_recursive_memoization(len(seq1), len(seq2))
 
 # ============================================================================
 # PART 3: TABULATION (BOTTOM-UP WITH TABLE)
